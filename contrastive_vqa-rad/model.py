@@ -58,29 +58,20 @@ class ConstrastiveModel(nn.Module):
         Creates the torch Module and will initilize all models and projections needed.
         """
         super(ConstrastiveModel, self).__init__()
-        # Load pre-trained BERT for text encoding
-        self.text_encoder = AutoModel.from_pretrained("neuml/pubmedbert-base-embeddings")
         # Load pre-trained ResNet for image encoding
         self.image_encoder = resnet50(weights=ResNet50_Weights.DEFAULT)
         # Replace final fc layer to match embedding dimension with text encoder
         # I found that this is important to do bc ResNet50 is trained for classification. We don't want this output. Replacing the last layer might help it "forget" this
-        embedding_dim = self.text_encoder.config.hidden_size # I found that they have this online
+        embedding_dim = 768 # TODO - should try and do this dynamically
         self.image_encoder.fc = nn.Linear(self.image_encoder.fc.in_features, embedding_dim) # as for this - checkout the _init_ method in https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py#L284
 
         # Projection layers to align embeddings
         self.text_projection = nn.Linear(embedding_dim, embedding_dim)
         self.image_projection = nn.Linear(embedding_dim, embedding_dim)
 
-    def encode_descriptions(self, tokens, attention_mask):
-        # get the embedding of the description from BERT
-        output = self.text_encoder(input_ids=tokens, 
-                                   attention_mask=attention_mask,
-                                   return_dict=True)
-        # Use [CLS] token embedding as text representation
-        text_features = output.last_hidden_state[:, 0, :]
+    def encode_descriptions(self, bert_encoding):
         # now apply the projection layer to the embedding
-        text_features = self.text_projection(text_features)
-
+        text_features = self.text_projection(bert_encoding)
         return text_features
 
     def encode_image(self, image):
@@ -91,9 +82,9 @@ class ConstrastiveModel(nn.Module):
         return image
     
 
-    def forward(self, image, tokens, attention_mask):
+    def forward(self, image, bert_encoding):
         # get latent space encodings for image and description
-        text_encoding = self.encode_descriptions(tokens, attention_mask)
+        text_encoding = self.encode_descriptions(bert_encoding)
         image_encoding = self.encode_image(image)
         
         return image_encoding, text_encoding
@@ -121,17 +112,16 @@ class Trainer():
         print(f"Starting training run: {self.training_number}")
         for epoch in range(epochs):
             total_loss = 0
-            for batch_idx, (images, tokens, att_mask) in enumerate(self.dataloader):
+            for batch_idx, (images, bert_encoding) in enumerate(self.dataloader):
                 # move data to correct device
                 images = images.to(self.device)
-                tokens = tokens.to(self.device)
-                att_mask = att_mask.to(self.device)
+                bert_encoding = bert_encoding.to(self.device)
 
                 # clear optimizer gradients
                 self.optimizer.zero_grad()
 
                 # compute forward pass
-                image_embedding, text_embedding = self.model(images, tokens, att_mask)
+                image_embedding, text_embedding = self.model(images, bert_encoding)
 
                 # compute loss
                 loss = self.contrasitve_loss(image_embedding, text_embedding)
