@@ -23,10 +23,8 @@ class VQA_Dataset():
         self.image_set=[]
         self.torches={}
 
-    #turn PIL into a tensor 
-    @staticmethod
-    def tensorize_image(image):
-        image_preprocessing = transforms.Compose([
+        #turn PIL into a tensor 
+        self.image_preprocessing = transforms.Compose([
             #want constant size
             transforms.Resize((256,256)),
             #use ToTensor gets float32 dtype between [0,1]
@@ -34,9 +32,7 @@ class VQA_Dataset():
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]), # this mean and std are one of the industry standards
         ])
-        transformed_image = image_preprocessing(image)
-        return transformed_image
-
+        
     def get_stats(self):
         for point in self.vqa["train"]:
             answer=point["answer"]
@@ -67,7 +63,7 @@ class VQA_Dataset():
                 '''
                 #item format: "image: ____ , question: ____ anwser:_____."
                 item = {
-                    "image": self.tensorize_image(point["image"]),
+                    "image": point["image"],
                     "prompt": f"question: {point['question']} answer: {point['answer']}"
                 }
                 new_data.append(item)
@@ -89,9 +85,27 @@ class VQA_Dataset():
 
     def get_torch(self, batch_size=4):
         for split in self.dataset.keys():
-            ds = self.dataset[split].with_format("torch")
-            self.torches[split] = DataLoader(ds, batch_size)
+            wrapped_ds = VQADatasetWrapper(self.dataset[split], transform=self.image_preprocessing)
+            self.torches[split] = DataLoader(wrapped_ds, batch_size=4, shuffle=(split == "train"))
         return self.torches
+    #output: batch, (image, prompt (embedded with BERT))
+
+
+class VQADatasetWrapper(Dataset):
+    def __init__(self, dataset, transform):
+        self.dataset = dataset
+        self.transform = transform
+
+    def __getitem__(self, idx):
+        item=self.dataset[idx]
+        image=self.transform(item['image'])
+        return {
+            "image": image,
+            "prompt": item['prompt']
+        }
+
+    def __len__(self):
+        return len(self.dataset)
 
 class PubMedBERT():
     def __init__(self):
@@ -143,9 +157,12 @@ if __name__ == "__main__":
     dataset=VQA_Dataset()
     dataset.get_stats()
     vqa, cleaned_vqa = dataset.get_prompt_dataset()
-    vqa_dataloader= dataset.get_torch(batch_size=4)
+    vqa_dataloaders= dataset.get_torch(batch_size=4)
+    sample_batch = next(iter(vqa_dataloaders['train']))
+    print(sample_batch)
+    breakpoint()
 
-    #dataloader plugin
+
     pubmedbert= PubMedBERT()
     pubmedbert.get_sentences(cleaned_vqa)
     pubmedbert.get_embeddings(cleaned_vqa)
