@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from transformers import AutoModel
 from torchvision.models import resnet50, ResNet50_Weights
+from vqa_data import Data_Creater
 
 class ContrastiveLoss(nn.Module):
     """
@@ -146,13 +147,13 @@ class Trainer():
 
 
 if __name__ == "__main__":
-    dataloader = None
-    if torch.cuda.is_available():
-        device = "cuda"
+    train, val, test = Data_Creater().create_datasets()
+    if torch.mps.is_available():
+        device = "mps"
     else:
         device = "cpu"
     print(f"Using: {device}")
     model = ConstrastiveModel()
-    trainer = Trainer(model, dataloader, device)
+    trainer = Trainer(model, train, device)
     trainer.train()
     trainer.save_model()
