@@ -91,7 +91,6 @@ class VQA_Dataset():
         for split in self.dataset.keys():
             ds = self.dataset[split].with_format("torch")
             self.torches[split] = DataLoader(ds, batch_size)
-            breakpoint()
         return self.torches
 
 class PubMedBERT():
@@ -144,7 +143,6 @@ if __name__ == "__main__":
     dataset=VQA_Dataset()
     dataset.get_stats()
     vqa, cleaned_vqa = dataset.get_prompt_dataset()
-    breakpoint()
     vqa_dataloader= dataset.get_torch(batch_size=4)
 
     #dataloader plugin
