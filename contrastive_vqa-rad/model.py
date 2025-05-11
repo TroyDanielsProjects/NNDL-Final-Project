@@ -148,8 +148,8 @@ class Trainer():
 
 if __name__ == "__main__":
     train, val, test = Data_Creater().create_datasets()
-    if torch.mps.is_available():
-        device = "mps"
+    if torch.cuda.is_available():
+        device = "cuda"
     else:
         device = "cpu"
     print(f"Using: {device}")
