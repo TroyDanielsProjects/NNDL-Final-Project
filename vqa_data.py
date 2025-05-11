@@ -1,6 +1,8 @@
-from datasets import load_dataset, DatasetDict, Dataset
+from datasets import load_dataset, DatasetDict, Dataset, Image
 from transformers import AutoTokenizer, AutoModel
 import torch
+from torchvision import transforms 
+from torch.utils.data import DataLoader
 
 class VQA_Dataset():
 
@@ -19,8 +21,23 @@ class VQA_Dataset():
         self.val= DatasetDict()
         self.test= DatasetDict()
         self.image_set=[]
-        
-    def get_yn_stats(self):
+        self.torches={}
+
+    #turn PIL into a tensor 
+    @staticmethod
+    def tensorize_image(image):
+        image_preprocessing = transforms.Compose([
+            #want constant size
+            transforms.Resize((256,256)),
+            #use ToTensor gets float32 dtype between [0,1]
+            #PILToTensor gets uint8 between [0,255]
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]), # this mean and std are one of the industry standards
+        ])
+        transformed_image = image_preprocessing(image)
+        return transformed_image
+
+    def get_stats(self):
         for point in self.vqa["train"]:
             answer=point["answer"]
             if answer == "yes" or answer == "no":
@@ -50,7 +67,7 @@ class VQA_Dataset():
                 '''
                 #item format: "image: ____ , question: ____ anwser:_____."
                 item = {
-                    "image": point["image"],
+                    "image": self.tensorize_image(point["image"]),
                     "prompt": f"question: {point['question']} answer: {point['answer']}"
                 }
                 new_data.append(item)
@@ -70,6 +87,12 @@ class VQA_Dataset():
         print(self.dataset)
         return self.vqa, self.dataset
 
+    def get_torch(self, batch_size=4):
+        for split in self.dataset.keys():
+            ds = self.dataset[split].with_format("torch")
+            self.torches[split] = DataLoader(ds, batch_size)
+            breakpoint()
+        return self.torches
 
 class PubMedBERT():
     def __init__(self):
@@ -119,9 +142,12 @@ class PubMedBERT():
 
 if __name__ == "__main__":
     dataset=VQA_Dataset()
-    dataset.get_yn_stats()
+    dataset.get_stats()
     vqa, cleaned_vqa = dataset.get_prompt_dataset()
+    breakpoint()
+    vqa_dataloader= dataset.get_torch(batch_size=4)
 
+    #dataloader plugin
     pubmedbert= PubMedBERT()
     pubmedbert.get_sentences(cleaned_vqa)
     pubmedbert.get_embeddings(cleaned_vqa)
