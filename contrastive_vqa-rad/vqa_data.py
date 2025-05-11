@@ -7,11 +7,12 @@ from transformers import AutoTokenizer, AutoModel
 class VQA_Dataset(Dataset):
 
     # pass model and tokenizer here instead of creaing in constructor so that we avoid making multiple
-    def __init__(self, ds, transformations, tokenizer, model, binary_answers=True):
+    def __init__(self, ds, transformations, tokenizer, model, test=False):
         self.dataset = ds
         self.transformations = transformations
         self.tokenizer = tokenizer
         self.model = model
+        self.test = test
 
     def __len__(self):
         return len(self.dataset)
@@ -29,7 +30,21 @@ class VQA_Dataset(Dataset):
         with torch.no_grad():
                 outputs = self.model(**tokenized)
         embedding = self.meanpooling(outputs, tokenized['attention_mask'])
-        return image, embedding.squeeze(0)
+        if self.test: # for test we need opposite answer for consine similarity. but don't want to take computational overhead for train
+            if answer == "yes":
+                 negative = "no"
+            else:
+                 negative = "yes"
+            negative_prompt = f"question: {question} answer: {negative}"
+            negative_tokenized = self.tokenizer(negative_prompt, padding='max_length', truncation=True, 
+                                    max_length=100, return_tensors='pt')
+            with torch.no_grad():
+                    negative_outputs = self.model(**negative_tokenized)
+            negative_embedding = self.meanpooling(negative_outputs, negative_tokenized['attention_mask'])
+
+            return image, embedding.squeeze(0), negative_embedding.squeeze(0)
+        else:
+            return image, embedding.squeeze(0)
     
     #as per pubmedBERT docs:
     #Mean Pooling - Take attention mask into account for correct averaging
@@ -61,14 +76,12 @@ class Data_Creater():
         filter_lamda = lambda example: example["answer"] in ["yes", "no"]
         train = VQA_Dataset(self.vqa['train'].filter(filter_lamda), self.image_preprocessing, self.tokenizer, self.model)
         test = self.vqa['test'].filter(filter_lamda)
-        validation = VQA_Dataset(test[:int(len(test))], self.image_preprocessing, self.tokenizer, self.model)
-        test = VQA_Dataset(test[int(len(test)):], self.image_preprocessing, self.tokenizer, self.model)
+        test = VQA_Dataset(test, self.image_preprocessing, self.tokenizer, self.model, test=True)
 
         train_dataloader = self.create_dataloader(train)
-        val_dataloader = self.create_dataloader(validation)
         test_dataloader = self.create_dataloader(test)
 
-        return train_dataloader, val_dataloader, test_dataloader
+        return train_dataloader, test_dataloader
     
     
     def create_dataloader(self, dataset, batch_size=64):
@@ -85,4 +98,5 @@ if __name__ == "__main__":
         print(f"Image is of shape: {images.shape}")
         print(f"Type of the Embedding is {type(bert_encoding[0])}")
         print(f"Encoding is of shape: {bert_encoding.shape}")
+        break
     

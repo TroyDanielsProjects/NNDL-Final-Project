@@ -93,9 +93,10 @@ class ConstrastiveModel(nn.Module):
 
 class Trainer():
 
-    def __init__(self, model, dataloader, device):
+    def __init__(self, model, dataloader, test_dataloader, device):
          # Pytorch DataLoader
         self.dataloader = dataloader # tokenizer must be set to: AutoTokenizer.from_pretrained("neuml/pubmedbert-base-embeddings")
+        self.test_dataloader = test_dataloader 
         # sets the Contrastive loss function
         self.device = device
         self.contrasitve_loss = ContrastiveLoss(self.device)
@@ -145,15 +146,48 @@ class Trainer():
     def load_model(self, path="models/clip_model.pth"):
         model.load_state_dict(torch.load(path))
 
+    def test(self):
+        correct = 0
+        total = 0
+        for batch_idx, (images, pos_emb, neg_emb) in enumerate(self.test_dataloader):
+            # move everything to the device
+            images = images.to(self.device)
+            pos_emb = pos_emb.to(self.device)
+            neg_emb = neg_emb.to(self.device)
+
+            # get image embedding and text projection embeddings 
+            with torch.no_grad():
+                images, pos_emb = self.model(images, pos_emb)
+                neg_emb = self.model.encode_descriptions(neg_emb)
+            
+            # Normalize each embedding to make consine sim equal to dot product
+            images = F.normalize(images, p=2, dim=1)
+            pos_emb = F.normalize(pos_emb, p=2, dim=1)
+            neg_emb = F.normalize(neg_emb, p=2, dim=1)
+
+            # go through each batch_size
+            for i in range(images.shape[0]):
+                correct_cos_sim = torch.dot(images[i], pos_emb[i])
+                incorrect_cos_sim = torch.dot(images[i], neg_emb[i])
+
+                if correct_cos_sim > incorrect_cos_sim:
+                    correct += 1
+                total += 1
+        print(f"The accuracy of the model is {correct/total}")
+
+
+
 
 if __name__ == "__main__":
-    train, val, test = Data_Creater().create_datasets()
+    train, test = Data_Creater().create_datasets()
     if torch.cuda.is_available():
         device = "cuda"
     else:
         device = "cpu"
     print(f"Using: {device}")
     model = ConstrastiveModel()
-    trainer = Trainer(model, train, device)
+    trainer = Trainer(model, train, test, device)
+    trainer.test()
     trainer.train()
-    trainer.save_model()
+    trainer.test()
+    # trainer.save_model()
