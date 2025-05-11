@@ -114,13 +114,12 @@ class VQA_Dataset(Dataset):
         # 3) BERT: tokenize and get embeddings
         tokenized = self.tokenizer(aug_q, padding='max_length', truncation=True, 
                                   max_length=100, return_tensors='pt')
-        tokens = {k: v.squeeze(0) for k,v in tokens.items()}  # remove batch dim
-
-
+        tokens = {k: v.squeeze(0) for k,v in tokens.items()}  # remove batch dim -> My addition, may not be needed
         with torch.no_grad():
                 outputs = self.model(**tokenized)
-        embedding = self.meanpooling(outputs, tokenized['attention_mask'])
-        return image, embedding.squeeze(0)
+        txt_embedding = self.meanpooling(outputs, tokenized['attention_mask'])
+
+        return img_tensor, txt_embedding.squeeze(0)
     
     #as per pubmedBERT docs:
     #Mean Pooling - Take attention mask into account for correct averaging
