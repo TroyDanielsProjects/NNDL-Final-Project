@@ -55,7 +55,6 @@ def augment_text(sentence):
         words[idx] = random_char_perturb(words[idx])
     return " ".join(words)
 
-
 # --- DATASET CLASS ---
 
 class VQA_Dataset(Dataset):
@@ -72,7 +71,6 @@ class VQA_Dataset(Dataset):
         self.model = model
         self.noise_mode = noise_mode
 
-        #debug: remove normalizations to recover images
         # Clean (baseline) image transform
         self.base_image_transform = T.Compose([
             T.Resize((256,256)),
@@ -93,7 +91,6 @@ class VQA_Dataset(Dataset):
             T.Normalize(mean=[0.485,0.456,0.406],
                         std =[0.229,0.224,0.225]),
         ])
-        
 
     def __len__(self):
         return len(self.dataset)
@@ -107,19 +104,14 @@ class VQA_Dataset(Dataset):
         # 1) IMAGE: choose clean vs. noisy 
         if self.noise_mode in ("image", "both"):
             img_tensor = self.image_noise_transform(image)
-            #debug: image_pil = to_pil_image(img_tensor)
-            #debug: image_pil.save(f"./image_pert/{image_pil}_pert.png")
         else:
             img_tensor = self.base_image_transform(image)   
-            #debug: image_pil = to_pil_image(img_tensor)
-            #debug: image_pil.save(f"./image_pert/{image_pil}_reg.png")
+
         # 2) TEXT: choose clean vs. noisy  ---> REVIEW 
         if self.noise_mode in ("text", "both"):
             aug_q = augment_text(f"question: {question} answer: {answer}")
-            #debug: print(aug_q)
         else:
             aug_q = f"question: {question} answer: {answer}"
-            #debug: print(aug_q)
 
         # 3) BERT: tokenize and get embeddings
         tokenized = self.tokenizer(aug_q, padding='max_length', truncation=True, 
@@ -192,7 +184,6 @@ class Data_Creater():
         train = VQA_Dataset(train_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
         validation = VQA_Dataset(val_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
         test = VQA_Dataset(test_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
-
         # Create dataloaders
         train_dataloader = self.create_dataloader(train)
         val_dataloader = self.create_dataloader(validation)
