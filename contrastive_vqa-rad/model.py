@@ -99,7 +99,7 @@ class Trainer():
         self.test_dataloader = test_dataloader 
         # sets the Contrastive loss function
         self.device = device
-        self.contrasitve_loss = ContrastiveLoss(self.device)
+        self.contrastive_loss = ContrastiveLoss(self.device)
         self.model = model.to(self.device)
         # get the layers that will be trained
         # Only train the projection layers and the ResNet fc layer, keep pre-trained weights frozen
@@ -126,7 +126,7 @@ class Trainer():
                 image_embedding, text_embedding = self.model(images, bert_encoding)
 
                 # compute loss
-                loss = self.contrasitve_loss(image_embedding, text_embedding)
+                loss = self.contrastive_loss(image_embedding, text_embedding)
 
                 # compute gradient and update weights
                 loss.backward()
