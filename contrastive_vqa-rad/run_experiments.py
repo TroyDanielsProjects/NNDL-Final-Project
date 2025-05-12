@@ -24,7 +24,7 @@ def main(noise_mode, dupes):
 
         # 2) Build model & trainer
         model   = ConstrastiveModel().to(device)
-        trainer = Trainer(model, train_dl, test_dl, device)
+        trainer = Trainer(model, train_dl, val_dl, device)
 
         # 3) Train & save
         trainer.train(epochs=EPOCHS)
@@ -32,6 +32,7 @@ def main(noise_mode, dupes):
             model_name=f"models/clip_{mode}_Dupes.pth"
         else:
             model_name=f"models/clip_{mode}_NoDupes.pth"
+        trainer.test()
         trainer.save_model(path=model_name)
 
 def build_parser() -> argparse.ArgumentParser:
