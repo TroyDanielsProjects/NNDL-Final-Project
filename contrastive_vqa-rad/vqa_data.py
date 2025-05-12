@@ -6,8 +6,7 @@ from transformers import AutoTokenizer, AutoModel
 import random
 from nltk.corpus import wordnet
 from torchvision.transforms.functional import to_pil_image
-
-
+import hashlib
 # --- TEXT AUGMENTATION HELPERS ---
 
 def replace_with_synonym(word):
@@ -158,11 +157,32 @@ class Data_Creater():
         self.noise_mode = noise_mode
         self.batch_size = batch_size
     
-    def create_datasets(self):
+    @staticmethod
+    def filter_duplicates(dataset):
+        """
+        Get idx of each unique image, only select these rows for dataset
+        """
+        image_list=[]
+        unique_list=[]
+        for idx, datapoint in enumerate(dataset):
+            image=datapoint["image"]
+            if image in image_list:
+                continue
+            else:
+                image_list.append(image)
+                unique_list.append(idx)
+        return dataset.select(unique_list)
+
+    def create_datasets(self, dupes):
         filter_lamda = lambda example: example["answer"] in ["yes", "no"]  # filter for yes/no answers
+        print(f"DUPES IS : {dupes}")
+        if not dupes:
+            self.vqa['train']=self.filter_duplicates(self.vqa['train'])
+            self.vqa['test']=self.filter_duplicates(self.vqa['test'])
+            #TEST THIS
         train_ds = self.vqa['train'].filter(filter_lamda)  # Create a filtered training dataset
         val_full_ds = self.vqa['test'].filter(filter_lamda)  # Create a filtered validation dataset, to be split later
-
+        print(f"NO DUPES: {len(train_ds)}")
         # Split the full validation dataset into 50% validation and 50% test
         split = val_full_ds.train_test_split(test_size=0.5, seed=42)
         val_ds    = split["train"]
@@ -188,7 +208,7 @@ class Data_Creater():
     
 if __name__ == "__main__":
     dc = Data_Creater()
-    train, val, test = dc.create_datasets()
+    train, val, test = dc.create_datasets(False)
     for batch_idx, (images, bert_encoding) in enumerate(train):
         print(f"Batch Index: {batch_idx}")
         print(f"Type of the image is {type(images[0])}")
