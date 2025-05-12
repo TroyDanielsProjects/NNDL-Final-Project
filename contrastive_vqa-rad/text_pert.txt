@@ -1,0 +1,17 @@
+question: is thiis an anterior posterior image? answer: no
+question: is this an anterior posterior image?; answer: no
+
+question: are the radical ganglia nelarged? answer: no
+question: are the basal ganglia enlarged?; answer: no
+
+quzestion: does this xray show an intubated patient? answer: no
+question: does this xray show an intubated patient?; answer: no
+
+question: is the left kidney ffected? answer: no
+question: is the left kidney affected?; answer: no
+
+question: is there evidnece of large calcified lesions in the lung fields? answer: no
+question: is there evidence of large calcified lesions in the lung fields?; answer: no
+
+question: is the gall bladder distened? answer: no
+question: is the gallbladder distended?; answer: no
