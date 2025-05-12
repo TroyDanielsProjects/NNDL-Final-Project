@@ -5,8 +5,8 @@ from torchvision import transforms as T
 from transformers import AutoTokenizer, AutoModel
 import random
 from nltk.corpus import wordnet
-
-
+from torchvision.transforms.functional import to_pil_image
+import hashlib
 # --- TEXT AUGMENTATION HELPERS ---
 
 def replace_with_synonym(word):
@@ -42,6 +42,9 @@ def augment_text(sentence):
     words = sentence.split()
     # synonym replacement on one random long word
     candidates = [i for i,w in enumerate(words) if len(w)>3]
+    
+    #make sure the question prompt is not perturbed
+    candidates.remove(0)
     if candidates:
         idx = random.choice(candidates)
         words[idx] = replace_with_synonym(words[idx])
@@ -51,7 +54,6 @@ def augment_text(sentence):
         idx = random.choice(candidates)
         words[idx] = random_char_perturb(words[idx])
     return " ".join(words)
-
 
 # --- DATASET CLASS ---
 
@@ -103,7 +105,7 @@ class VQA_Dataset(Dataset):
         if self.noise_mode in ("image", "both"):
             img_tensor = self.image_noise_transform(image)
         else:
-            img_tensor = self.base_image_transform(image)   # REVIEW
+            img_tensor = self.base_image_transform(image)   
 
         # 2) TEXT: choose clean vs. noisy  ---> REVIEW 
         if self.noise_mode in ("text", "both"):
@@ -114,25 +116,13 @@ class VQA_Dataset(Dataset):
         # 3) BERT: tokenize and get embeddings
         tokenized = self.tokenizer(aug_q, padding='max_length', truncation=True, 
                                   max_length=100, return_tensors='pt')
-        tokens = {k: v.squeeze(0) for k,v in tokens.items()}  # remove batch dim -> My addition, may not be needed
+        #commented out, caused error and was unused in subsequent lines
+        #tokens = {k: v.squeeze(0) for k,v in tokens.items()}  # remove batch dim -> My addition, may not be needed
         with torch.no_grad():
                 outputs = self.model(**tokenized)
-        embedding = self.meanpooling(outputs, tokenized['attention_mask'])
-        if self.test: # for test we need opposite answer for consine similarity. but don't want to take computational overhead for train
-            if answer == "yes":
-                 negative = "no"
-            else:
-                 negative = "yes"
-            negative_prompt = f"question: {question} answer: {negative}"
-            negative_tokenized = self.tokenizer(negative_prompt, padding='max_length', truncation=True, 
-                                    max_length=100, return_tensors='pt')
-            with torch.no_grad():
-                    negative_outputs = self.model(**negative_tokenized)
-            negative_embedding = self.meanpooling(negative_outputs, negative_tokenized['attention_mask'])
+        txt_embedding = self.meanpooling(outputs, tokenized['attention_mask'])
 
-            return image, embedding.squeeze(0), negative_embedding.squeeze(0)
-        else:
-            return image, embedding.squeeze(0)
+        return img_tensor, txt_embedding.squeeze(0)
     
     #as per pubmedBERT docs:
     #Mean Pooling - Take attention mask into account for correct averaging
@@ -159,11 +149,32 @@ class Data_Creater():
         self.noise_mode = noise_mode
         self.batch_size = batch_size
     
-    def create_datasets(self):
+    @staticmethod
+    def filter_duplicates(dataset):
+        """
+        Get idx of each unique image, only select these rows for dataset
+        """
+        image_list=[]
+        unique_list=[]
+        for idx, datapoint in enumerate(dataset):
+            image=datapoint["image"]
+            if image in image_list:
+                continue
+            else:
+                image_list.append(image)
+                unique_list.append(idx)
+        return dataset.select(unique_list)
+
+    def create_datasets(self, dupes):
         filter_lamda = lambda example: example["answer"] in ["yes", "no"]  # filter for yes/no answers
+        print(f"DUPES IS : {dupes}")
+        if not dupes:
+            self.vqa['train']=self.filter_duplicates(self.vqa['train'])
+            self.vqa['test']=self.filter_duplicates(self.vqa['test'])
+            #TEST THIS
         train_ds = self.vqa['train'].filter(filter_lamda)  # Create a filtered training dataset
         val_full_ds = self.vqa['test'].filter(filter_lamda)  # Create a filtered validation dataset, to be split later
-
+        print(f"NO DUPES: {len(train_ds)}")
         # Split the full validation dataset into 50% validation and 50% test
         split = val_full_ds.train_test_split(test_size=0.5, seed=42)
         val_ds    = split["train"]
@@ -173,12 +184,12 @@ class Data_Creater():
         train = VQA_Dataset(train_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
         validation = VQA_Dataset(val_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
         test = VQA_Dataset(test_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
-
         # Create dataloaders
         train_dataloader = self.create_dataloader(train)
+        val_dataloader = self.create_dataloader(validation)
         test_dataloader = self.create_dataloader(test)
 
-        return train_dataloader, test_dataloader
+        return train_dataloader, val_dataloader, test_dataloader
     
     
     def create_dataloader(self, dataset, batch_size=64):
@@ -188,7 +199,7 @@ class Data_Creater():
     
 if __name__ == "__main__":
     dc = Data_Creater()
-    train, val, test = dc.create_datasets()
+    train, val, test = dc.create_datasets(False)
     for batch_idx, (images, bert_encoding) in enumerate(train):
         print(f"Batch Index: {batch_idx}")
         print(f"Type of the image is {type(images[0])}")
@@ -196,4 +207,3 @@ if __name__ == "__main__":
         print(f"Type of the Embedding is {type(bert_encoding[0])}")
         print(f"Encoding is of shape: {bert_encoding.shape}")
         break
-    
