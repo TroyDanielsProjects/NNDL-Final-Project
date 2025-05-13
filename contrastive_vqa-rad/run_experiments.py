@@ -35,7 +35,7 @@ def main(dupes, epochs, batch_size, repeats):
     total_accuracy_difference_text = 0
     total_accuracy_difference_image = 0
     total_accuracy_difference_both = 0
-    for i in repeats:
+    for i in range(repeats):
         logger.info(f"Starting iteration {i+1}")
         for mode in NOISE_MODES:
             logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
