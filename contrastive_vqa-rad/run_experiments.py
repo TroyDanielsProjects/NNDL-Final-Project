@@ -28,7 +28,6 @@ def main(noise_mode, dupes, epochs):
 
 
     device = 'cuda' if torch.cuda.is_available() else "cpu"
-    device = 'mps'
     logger.info(f"Using {device} device")
     logger.info(dupes)
     for mode in NOISE_MODES:
