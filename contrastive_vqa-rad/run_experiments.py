@@ -13,6 +13,7 @@ def main(noise_mode, dupes, epochs):
     # set up logging
     log_filename = f"logs/{datetime.now()}.log"
     os.makedirs("logs", exist_ok=True)
+    os.makedirs("models", exist_ok=True)
     with open(log_filename, "a") as f:
         f.write(f"NEW RUN - Noise Mode:{noise_mode}, Dupes:{dupes}")
     logging.basicConfig(
