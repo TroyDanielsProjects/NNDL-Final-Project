@@ -9,7 +9,7 @@ NOISE_MODES = ["none", "text", "image", "both"]
 BATCH_SIZE  = 64
 
 
-def main(noise_mode, dupes, epochs, test_mode):
+def main(noise_mode, dupes, epochs, test_mode, repeats):
     # set up logging
     log_filename = f"logs/{datetime.now()}.log"
     os.makedirs("logs", exist_ok=True)
@@ -31,41 +31,44 @@ def main(noise_mode, dupes, epochs, test_mode):
     device = 'cuda' if torch.cuda.is_available() else "cpu"
     logger.info(f"Using {device} device")
     logger.info(dupes)
-    for mode in NOISE_MODES:
-        # logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
-        # 1) Prepare data loaders for this regime
-        creator = Data_Creater(noise_mode=mode)
-        #specify dupes
-        train_dl, val_dl, test_dl = creator.create_datasets(dupes)
-        
-        #debug: test datasets for noise
-        #debug: sample=next(iter(train_dl))
-        #debug:print(sample)
+    for i in range(repeats):
+        logger.info(f"\n\nStarting iteration: {i+1}")
+        for mode in NOISE_MODES:
+            # logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
+            # 1) Prepare data loaders for this regime
+            creator = Data_Creater(noise_mode=mode)
+            #specify dupes
+            train_dl, val_dl, test_dl = creator.create_datasets(dupes)
+            
+            #debug: test datasets for noise
+            #debug: sample=next(iter(train_dl))
+            #debug:print(sample)
 
-        if not test_mode:
-            logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
-            # 2) Build model & trainer
-            model   = ConstrastiveModel().to(device)
-            trainer = Trainer(model, train_dl, val_dl, device)
-
-            # 3) Train & save
-            trainer.train(epochs=epochs)
-            if dupes:
-                model_name=f"models/clip_{mode}_Dupes.pth"
-            else:
-                model_name=f"models/clip_{mode}_NoDupes.pth"
-            trainer.test()
-            trainer.save_model(path=model_name)
-        else:
-            logger.info("\n\n=== Running with zero-training baseline parameters ===")
-            for run in range(10):
-                # 1) New model instance → new random init of projection layers
-                model = ConstrastiveModel().to(device)
-                trainer = Trainer(model, None, test_dl, device)  # pass None for train_dl
-
-                # 2) Evaluate without any train()
-                print(f"\nBaseline run {run+1}")
+            if not test_mode:
                 trainer.test()
+                logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
+                # 2) Build model & trainer
+                model   = ConstrastiveModel().to(device)
+                trainer = Trainer(model, train_dl, val_dl, device)
+
+                # 3) Train & save
+                trainer.train(epochs=epochs)
+                if dupes:
+                    model_name=f"models/clip_{mode}_Dupes.pth"
+                else:
+                    model_name=f"models/clip_{mode}_NoDupes.pth"
+                trainer.test()
+                trainer.save_model(path=model_name)
+            else:
+                logger.info("\n\n=== Running with zero-training baseline parameters ===")
+                for run in range(10):
+                    # 1) New model instance → new random init of projection layers
+                    model = ConstrastiveModel().to(device)
+                    trainer = Trainer(model, None, test_dl, device)  # pass None for train_dl
+
+                    # 2) Evaluate without any train()
+                    logger.info(f"\nBaseline run {run+1}")
+                    trainer.test()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -92,8 +95,12 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["True", "False"], default="False",
         help="if True, run zero‐train baselines instead of training")
     
+    parser.add_argument(
+        "--repeats", type=int, default=15,
+        help="if True, run zero‐train baselines instead of training")
+    
     return parser
 
 if __name__ == "__main__":
     args= build_parser().parse_args()
-    main(args.noise, eval(args.dupes), args.epochs, eval(args.test_mode))
+    main(args.noise, eval(args.dupes), args.epochs, eval(args.test_mode), args.repeats)
