@@ -69,7 +69,13 @@ def main(noise_mode, dupes, epochs):
             "Accuracy": accuracy
         }])
         model_df.to_csv('models.csv', mode='a', header=False, index=False)
-
+    
+    model_df = pd.DataFrame([{
+            "Model Name": "new-setting",
+            "Accuracy": "new-setting"
+        }])
+    model_df.to_csv('models.csv', mode='a', header=False, index=False)
+    
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Pick noise to add to dataset")

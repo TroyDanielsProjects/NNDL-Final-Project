@@ -106,13 +106,13 @@ class VQA_Dataset(Dataset):
         answer = item['answer']
 
         # 1) IMAGE: choose clean vs. noisy 
-        if self.noise_mode in ("image", "both"):
+        if self.noise_mode in ("image", "both") and not self.test:
             img_tensor = self.image_noise_transform(image)
         else:
             img_tensor = self.base_image_transform(image)   
 
         # 2) TEXT: choose clean vs. noisy  ---> REVIEW 
-        if self.noise_mode in ("text", "both"):
+        if self.noise_mode in ("text", "both") and not self.test:
             aug_q = augment_text(f"question: {question} answer: {answer}")
         else:
             aug_q = f"question: {question} answer: {answer}"
