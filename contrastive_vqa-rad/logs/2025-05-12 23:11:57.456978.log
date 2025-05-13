@@ -38,3 +38,23 @@ NEW RUN - Noise Mode:none, Dupes:True2025-05-12 23:11:57,457 | INFO | __main__ |
 2025-05-12 23:33:06,474 | INFO | model | Epoch 7/15, Average Loss: 2.4214
 2025-05-12 23:34:02,690 | INFO | model | Epoch 8/15, Average Loss: 2.1488
 2025-05-12 23:34:58,903 | INFO | model | Epoch 9/15, Average Loss: 1.9837
+2025-05-12 23:35:55,720 | INFO | model | Epoch 10/15, Average Loss: 1.8485
+2025-05-12 23:36:51,649 | INFO | model | Epoch 11/15, Average Loss: 1.7230
+2025-05-12 23:37:45,763 | INFO | model | Epoch 12/15, Average Loss: 1.6401
+2025-05-12 23:38:39,855 | INFO | model | Epoch 13/15, Average Loss: 1.5373
+2025-05-12 23:39:34,232 | INFO | model | Epoch 14/15, Average Loss: 1.4493
+2025-05-12 23:40:28,812 | INFO | model | Epoch 15/15, Average Loss: 1.3486
+2025-05-12 23:40:40,442 | INFO | model | The accuracy of the model is 0.536
+2025-05-12 23:40:40,664 | INFO | __main__ | 
+
+=== Training with noise_mode = 'image' ===
+2025-05-12 23:40:41,676 | INFO | vqa_data | DUPES IS : True
+2025-05-12 23:40:41,679 | INFO | vqa_data | NO DUPES: 940
+2025-05-12 23:40:42,193 | INFO | model | Starting training run: 1
+2025-05-12 23:42:16,308 | INFO | model | Epoch 1/15, Average Loss: 5.7178
+2025-05-12 23:43:50,879 | INFO | model | Epoch 2/15, Average Loss: 4.1179
+2025-05-12 23:45:25,334 | INFO | model | Epoch 3/15, Average Loss: 3.5546
+2025-05-12 23:47:00,202 | INFO | model | Epoch 4/15, Average Loss: 3.2841
+2025-05-12 23:48:34,816 | INFO | model | Epoch 5/15, Average Loss: 3.0424
+2025-05-12 23:50:10,004 | INFO | model | Epoch 6/15, Average Loss: 2.9200
+2025-05-12 23:51:46,867 | INFO | model | Epoch 7/15, Average Loss: 2.7599

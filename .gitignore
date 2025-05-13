@@ -5,4 +5,5 @@ contrastive_vqa-rad/__pycache__
 competition_and_demo/
 contrastive_vqa-rad/__pycache__/vqa_data.cpython-312.pyc
 contrastive_vqa-rad/models/
+contrastive_vqa-rad/logs/
 .DS_Store
