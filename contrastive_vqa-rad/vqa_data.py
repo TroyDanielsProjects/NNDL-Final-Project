@@ -62,7 +62,7 @@ def augment_text(sentence):
 
 class VQA_Dataset(Dataset):
     # pass model and tokenizer here instead of creaing in constructor so that we avoid making multiple
-    def __init__(self, split_ds, tokenizer, model, noise_mode="none"):
+    def __init__(self, split_ds, tokenizer, model, noise_mode="none", test=False):
         """
         split_ds    : HuggingFace Dataset split filtered to yes/no examples
         tokenizer   : a BERT tokenizer
@@ -73,6 +73,7 @@ class VQA_Dataset(Dataset):
         self.tokenizer = tokenizer
         self.model = model
         self.noise_mode = noise_mode
+        self.test = test
 
         # Clean (baseline) image transform
         self.base_image_transform = T.Compose([
@@ -123,9 +124,23 @@ class VQA_Dataset(Dataset):
         #tokens = {k: v.squeeze(0) for k,v in tokens.items()}  # remove batch dim -> My addition, may not be needed
         with torch.no_grad():
                 outputs = self.model(**tokenized)
-        txt_embedding = self.meanpooling(outputs, tokenized['attention_mask'])
+        
+        embedding = self.meanpooling(outputs, tokenized['attention_mask'])
+        if self.test: # for test we need opposite answer for consine similarity. but don't want to take computational overhead for train
+            if answer == "yes":
+                 negative = "no"
+            else:
+                 negative = "yes"
+            negative_prompt = f"question: {question} answer: {negative}"
+            negative_tokenized = self.tokenizer(negative_prompt, padding='max_length', truncation=True, 
+                                    max_length=100, return_tensors='pt')
+            with torch.no_grad():
+                    negative_outputs = self.model(**negative_tokenized)
+            negative_embedding = self.meanpooling(negative_outputs, negative_tokenized['attention_mask'])
 
-        return img_tensor, txt_embedding.squeeze(0)
+            return img_tensor, embedding.squeeze(0), negative_embedding.squeeze(0)
+        else:
+            return img_tensor, embedding.squeeze(0)
     
     #as per pubmedBERT docs:
     #Mean Pooling - Take attention mask into account for correct averaging
@@ -185,8 +200,8 @@ class Data_Creater():
 
         # Wrap the datasets with the VQA_Dataset class
         train = VQA_Dataset(train_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
-        validation = VQA_Dataset(val_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
-        test = VQA_Dataset(test_ds, self.tokenizer, self.model, noise_mode=self.noise_mode)
+        validation = VQA_Dataset(val_ds, self.tokenizer, self.model, noise_mode=self.noise_mode, test=True)
+        test = VQA_Dataset(test_ds, self.tokenizer, self.model, noise_mode=self.noise_mode, test=True)
         # Create dataloaders
         train_dataloader = self.create_dataloader(train)
         val_dataloader = self.create_dataloader(validation)
