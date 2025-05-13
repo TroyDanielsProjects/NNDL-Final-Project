@@ -177,6 +177,7 @@ class Trainer():
                     correct += 1
                 total += 1
         logger.info(f"The accuracy of the model is {correct/total}")
+        return correct/total
 
 
 

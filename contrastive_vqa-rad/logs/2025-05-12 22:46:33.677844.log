@@ -1,0 +1,91 @@
+NEW RUN - Noise Mode:none, Dupes:False2025-05-12 22:46:33,678 | INFO | __main__ | Experiment started.
+2025-05-12 22:46:33,678 | INFO | __main__ | Using mps device
+2025-05-12 22:46:33,678 | INFO | __main__ | False
+2025-05-12 22:46:33,678 | INFO | __main__ | 
+
+=== Training with noise_mode = 'none' ===
+2025-05-12 22:46:37,523 | INFO | vqa_data | DUPES IS : False
+2025-05-12 22:46:48,890 | INFO | vqa_data | NO DUPES: 181
+2025-05-12 22:46:49,303 | INFO | model | Starting training run: 1
+2025-05-12 22:47:02,620 | INFO | model | Epoch 1/15, Average Loss: 6.6944
+2025-05-12 22:47:14,519 | INFO | model | Epoch 2/15, Average Loss: 5.0109
+2025-05-12 22:47:25,295 | INFO | model | Epoch 3/15, Average Loss: 4.1410
+2025-05-12 22:47:36,174 | INFO | model | Epoch 4/15, Average Loss: 3.2977
+2025-05-12 22:47:47,041 | INFO | model | Epoch 5/15, Average Loss: 2.7525
+2025-05-12 22:47:57,901 | INFO | model | Epoch 6/15, Average Loss: 2.3094
+2025-05-12 22:48:08,956 | INFO | model | Epoch 7/15, Average Loss: 1.8049
+2025-05-12 22:48:19,911 | INFO | model | Epoch 8/15, Average Loss: 1.5748
+2025-05-12 22:48:30,695 | INFO | model | Epoch 9/15, Average Loss: 1.0557
+2025-05-12 22:48:41,748 | INFO | model | Epoch 10/15, Average Loss: 0.8713
+2025-05-12 22:48:52,694 | INFO | model | Epoch 11/15, Average Loss: 0.7558
+2025-05-12 22:49:03,330 | INFO | model | Epoch 12/15, Average Loss: 0.6633
+2025-05-12 22:49:14,036 | INFO | model | Epoch 13/15, Average Loss: 0.4529
+2025-05-12 22:49:25,022 | INFO | model | Epoch 14/15, Average Loss: 0.5624
+2025-05-12 22:49:35,998 | INFO | model | Epoch 15/15, Average Loss: 0.3112
+2025-05-12 22:49:42,652 | INFO | model | The accuracy of the model is 0.5925925925925926
+2025-05-12 22:49:42,895 | INFO | __main__ | 
+
+=== Training with noise_mode = 'text' ===
+2025-05-12 22:49:43,631 | INFO | vqa_data | DUPES IS : False
+2025-05-12 22:49:54,884 | INFO | vqa_data | NO DUPES: 181
+2025-05-12 22:49:55,370 | INFO | model | Starting training run: 1
+2025-05-12 22:50:08,527 | INFO | model | Epoch 1/15, Average Loss: 6.9558
+2025-05-12 22:50:19,423 | INFO | model | Epoch 2/15, Average Loss: 5.4004
+2025-05-12 22:50:30,239 | INFO | model | Epoch 3/15, Average Loss: 4.5380
+2025-05-12 22:50:41,091 | INFO | model | Epoch 4/15, Average Loss: 4.0213
+2025-05-12 22:50:52,069 | INFO | model | Epoch 5/15, Average Loss: 3.5786
+2025-05-12 22:51:04,999 | INFO | model | Epoch 6/15, Average Loss: 3.1905
+2025-05-12 22:51:16,031 | INFO | model | Epoch 7/15, Average Loss: 2.8837
+2025-05-12 22:51:27,069 | INFO | model | Epoch 8/15, Average Loss: 2.5007
+2025-05-12 22:51:37,934 | INFO | model | Epoch 9/15, Average Loss: 2.2327
+2025-05-12 22:51:48,868 | INFO | model | Epoch 10/15, Average Loss: 2.0093
+2025-05-12 22:51:59,646 | INFO | model | Epoch 11/15, Average Loss: 1.7982
+2025-05-12 22:52:10,603 | INFO | model | Epoch 12/15, Average Loss: 1.5993
+2025-05-12 22:52:21,489 | INFO | model | Epoch 13/15, Average Loss: 1.5276
+2025-05-12 22:52:32,343 | INFO | model | Epoch 14/15, Average Loss: 1.2845
+2025-05-12 22:52:43,205 | INFO | model | Epoch 15/15, Average Loss: 1.1346
+2025-05-12 22:52:48,646 | INFO | model | The accuracy of the model is 0.5370370370370371
+2025-05-12 22:52:48,870 | INFO | __main__ | 
+
+=== Training with noise_mode = 'image' ===
+2025-05-12 22:52:49,897 | INFO | vqa_data | DUPES IS : False
+2025-05-12 22:53:00,597 | INFO | vqa_data | NO DUPES: 181
+2025-05-12 22:53:01,140 | INFO | model | Starting training run: 1
+2025-05-12 22:53:20,212 | INFO | model | Epoch 1/15, Average Loss: 7.0591
+2025-05-12 22:53:39,009 | INFO | model | Epoch 2/15, Average Loss: 5.5108
+2025-05-12 22:53:57,266 | INFO | model | Epoch 3/15, Average Loss: 4.8529
+2025-05-12 22:54:15,145 | INFO | model | Epoch 4/15, Average Loss: 4.5541
+2025-05-12 22:54:33,091 | INFO | model | Epoch 5/15, Average Loss: 4.0895
+2025-05-12 22:54:51,174 | INFO | model | Epoch 6/15, Average Loss: 3.6910
+2025-05-12 22:55:09,474 | INFO | model | Epoch 7/15, Average Loss: 3.3926
+2025-05-12 22:55:28,085 | INFO | model | Epoch 8/15, Average Loss: 3.0426
+2025-05-12 22:55:46,994 | INFO | model | Epoch 9/15, Average Loss: 3.0979
+2025-05-12 22:56:05,240 | INFO | model | Epoch 10/15, Average Loss: 2.8140
+2025-05-12 22:56:23,564 | INFO | model | Epoch 11/15, Average Loss: 2.5168
+2025-05-12 22:56:42,714 | INFO | model | Epoch 12/15, Average Loss: 2.4064
+2025-05-12 22:57:03,147 | INFO | model | Epoch 13/15, Average Loss: 2.2652
+2025-05-12 22:57:23,459 | INFO | model | Epoch 14/15, Average Loss: 2.0707
+2025-05-12 22:57:42,792 | INFO | model | Epoch 15/15, Average Loss: 1.9796
+2025-05-12 22:57:50,604 | INFO | model | The accuracy of the model is 0.5740740740740741
+2025-05-12 22:57:50,828 | INFO | __main__ | 
+
+=== Training with noise_mode = 'both' ===
+2025-05-12 22:57:51,698 | INFO | vqa_data | DUPES IS : False
+2025-05-12 22:58:03,251 | INFO | vqa_data | NO DUPES: 181
+2025-05-12 22:58:03,740 | INFO | model | Starting training run: 1
+2025-05-12 22:58:24,461 | INFO | model | Epoch 1/15, Average Loss: 6.5706
+2025-05-12 22:58:43,420 | INFO | model | Epoch 2/15, Average Loss: 5.8905
+2025-05-12 22:59:02,448 | INFO | model | Epoch 3/15, Average Loss: 5.1973
+2025-05-12 22:59:21,618 | INFO | model | Epoch 4/15, Average Loss: 4.8866
+2025-05-12 22:59:41,028 | INFO | model | Epoch 5/15, Average Loss: 4.4811
+2025-05-12 23:00:00,162 | INFO | model | Epoch 6/15, Average Loss: 4.1106
+2025-05-12 23:00:19,979 | INFO | model | Epoch 7/15, Average Loss: 3.9223
+2025-05-12 23:00:39,378 | INFO | model | Epoch 8/15, Average Loss: 3.8535
+2025-05-12 23:00:59,480 | INFO | model | Epoch 9/15, Average Loss: 3.6822
+2025-05-12 23:01:18,920 | INFO | model | Epoch 10/15, Average Loss: 3.2911
+2025-05-12 23:01:38,190 | INFO | model | Epoch 11/15, Average Loss: 3.2566
+2025-05-12 23:01:57,636 | INFO | model | Epoch 12/15, Average Loss: 3.0813
+2025-05-12 23:02:18,722 | INFO | model | Epoch 13/15, Average Loss: 3.0201
+2025-05-12 23:02:38,586 | INFO | model | Epoch 14/15, Average Loss: 2.9663
+2025-05-12 23:02:58,390 | INFO | model | Epoch 15/15, Average Loss: 2.6946
+2025-05-12 23:03:06,760 | INFO | model | The accuracy of the model is 0.48148148148148145

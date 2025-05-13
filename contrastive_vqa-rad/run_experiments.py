@@ -5,6 +5,7 @@ import argparse
 import os
 import logging
 from datetime import datetime
+import pandas as pd
 NOISE_MODES = ["none", "text", "image", "both"]
 BATCH_SIZE  = 64
 
@@ -28,6 +29,7 @@ def main(noise_mode, dupes, epochs):
 
 
     device = 'cuda' if torch.cuda.is_available() else "cpu"
+    device= 'mps'
     logger.info(f"Using {device} device")
     logger.info(dupes)
     for mode in NOISE_MODES:
@@ -44,15 +46,29 @@ def main(noise_mode, dupes, epochs):
         # 2) Build model & trainer
         model   = ConstrastiveModel().to(device)
         trainer = Trainer(model, train_dl, val_dl, device)
-
+        
+        #test accuracy without any training
+        accuracy=trainer.test()
+        model_df = pd.DataFrame([{
+            "Model Name": f"no-training_dupes{dupes}",
+            "Accuracy": accuracy
+        }])
+        model_df.to_csv('models.csv', mode='a', header=False, index=False)
         # 3) Train & save
         trainer.train(epochs=epochs)
         if dupes:
             model_name=f"models/clip_{mode}_Dupes.pth"
         else:
             model_name=f"models/clip_{mode}_NoDupes.pth"
-        trainer.test()
+        accuracy=trainer.test()
         trainer.save_model(path=model_name)
+
+        #single-row DataFrame
+        model_df = pd.DataFrame([{
+            "Model Name": model_name,
+            "Accuracy": accuracy
+        }])
+        model_df.to_csv('models.csv', mode='a', header=False, index=False)
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(

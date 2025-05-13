@@ -1,0 +1,40 @@
+NEW RUN - Noise Mode:none, Dupes:True2025-05-12 23:11:57,457 | INFO | __main__ | Experiment started.
+2025-05-12 23:11:57,457 | INFO | __main__ | Using mps device
+2025-05-12 23:11:57,457 | INFO | __main__ | True
+2025-05-12 23:11:57,457 | INFO | __main__ | 
+
+=== Training with noise_mode = 'none' ===
+2025-05-12 23:12:01,737 | INFO | vqa_data | DUPES IS : True
+2025-05-12 23:12:01,740 | INFO | vqa_data | NO DUPES: 940
+2025-05-12 23:12:02,158 | INFO | model | Starting training run: 1
+2025-05-12 23:12:57,035 | INFO | model | Epoch 1/15, Average Loss: 5.4176
+2025-05-12 23:13:52,549 | INFO | model | Epoch 2/15, Average Loss: 3.5975
+2025-05-12 23:14:48,703 | INFO | model | Epoch 3/15, Average Loss: 2.8642
+2025-05-12 23:15:45,129 | INFO | model | Epoch 4/15, Average Loss: 2.4443
+2025-05-12 23:16:44,963 | INFO | model | Epoch 5/15, Average Loss: 2.0881
+2025-05-12 23:17:44,286 | INFO | model | Epoch 6/15, Average Loss: 1.7545
+2025-05-12 23:18:41,746 | INFO | model | Epoch 7/15, Average Loss: 1.4286
+2025-05-12 23:19:40,322 | INFO | model | Epoch 8/15, Average Loss: 1.2359
+2025-05-12 23:20:38,135 | INFO | model | Epoch 9/15, Average Loss: 1.0106
+2025-05-12 23:21:35,309 | INFO | model | Epoch 10/15, Average Loss: 0.8669
+2025-05-12 23:22:30,920 | INFO | model | Epoch 11/15, Average Loss: 0.8111
+2025-05-12 23:23:26,634 | INFO | model | Epoch 12/15, Average Loss: 0.6776
+2025-05-12 23:24:24,356 | INFO | model | Epoch 13/15, Average Loss: 0.6490
+2025-05-12 23:25:21,762 | INFO | model | Epoch 14/15, Average Loss: 0.6425
+2025-05-12 23:26:17,959 | INFO | model | Epoch 15/15, Average Loss: 0.6395
+2025-05-12 23:26:31,004 | INFO | model | The accuracy of the model is 0.592
+2025-05-12 23:26:31,255 | INFO | __main__ | 
+
+=== Training with noise_mode = 'text' ===
+2025-05-12 23:26:32,097 | INFO | vqa_data | DUPES IS : True
+2025-05-12 23:26:32,100 | INFO | vqa_data | NO DUPES: 940
+2025-05-12 23:26:32,674 | INFO | model | Starting training run: 1
+2025-05-12 23:27:29,529 | INFO | model | Epoch 1/15, Average Loss: 5.5947
+2025-05-12 23:28:25,854 | INFO | model | Epoch 2/15, Average Loss: 4.0578
+2025-05-12 23:29:22,778 | INFO | model | Epoch 3/15, Average Loss: 3.4464
+2025-05-12 23:30:19,404 | INFO | model | Epoch 4/15, Average Loss: 3.0546
+2025-05-12 23:31:16,056 | INFO | model | Epoch 5/15, Average Loss: 2.8045
+2025-05-12 23:32:11,651 | INFO | model | Epoch 6/15, Average Loss: 2.5707
+2025-05-12 23:33:06,474 | INFO | model | Epoch 7/15, Average Loss: 2.4214
+2025-05-12 23:34:02,690 | INFO | model | Epoch 8/15, Average Loss: 2.1488
+2025-05-12 23:34:58,903 | INFO | model | Epoch 9/15, Average Loss: 1.9837
