@@ -5,6 +5,9 @@ import torch.optim as optim
 from transformers import AutoModel
 from torchvision.models import resnet50, ResNet50_Weights
 from vqa_data import Data_Creater
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ContrastiveLoss(nn.Module):
     """
@@ -111,7 +114,7 @@ class Trainer():
         self.training_number = 1
 
     def train(self, epochs=5):
-        print(f"Starting training run: {self.training_number}")
+        logger.info(f"Starting training run: {self.training_number}")
         for epoch in range(epochs):
             total_loss = 0
             for batch_idx, (images, bert_encoding) in enumerate(self.dataloader):
@@ -135,9 +138,9 @@ class Trainer():
                 total_loss += loss.item()
 
                 if (batch_idx+1) % 25 == 0:
-                    print(f"Epoch {epoch+1}/{epochs}, Batch {batch_idx}/{len(self.dataloader)}, Loss: {loss.item():.4f}")
+                    logger.info(f"Epoch {epoch+1}/{epochs}, Batch {batch_idx}/{len(self.dataloader)}, Loss: {loss.item():.4f}")
             
-            print(f"Epoch {epoch+1}/{epochs}, Average Loss: {total_loss/len(self.dataloader):.4f}")
+            logger.info(f"Epoch {epoch+1}/{epochs}, Average Loss: {total_loss/len(self.dataloader):.4f}")
         self.training_number += 1
 
     def save_model(self, path="models/clip_model.pth"):
@@ -173,7 +176,7 @@ class Trainer():
                 if correct_cos_sim > incorrect_cos_sim:
                     correct += 1
                 total += 1
-        print(f"The accuracy of the model is {correct/total}")
+        logger.info(f"The accuracy of the model is {correct/total}")
 
 
 

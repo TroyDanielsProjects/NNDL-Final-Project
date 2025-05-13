@@ -7,7 +7,10 @@ import random
 from nltk.corpus import wordnet
 from torchvision.transforms.functional import to_pil_image
 import hashlib
+import logging
 # --- TEXT AUGMENTATION HELPERS ---
+
+logger = logging.getLogger(__name__)
 
 def replace_with_synonym(word):
     """Replace a word with one of its WordNet synonyms (if available)."""
@@ -167,14 +170,14 @@ class Data_Creater():
 
     def create_datasets(self, dupes):
         filter_lamda = lambda example: example["answer"] in ["yes", "no"]  # filter for yes/no answers
-        print(f"DUPES IS : {dupes}")
+        logger.info(f"DUPES IS : {dupes}")
         if not dupes:
             self.vqa['train']=self.filter_duplicates(self.vqa['train'])
             self.vqa['test']=self.filter_duplicates(self.vqa['test'])
             #TEST THIS
         train_ds = self.vqa['train'].filter(filter_lamda)  # Create a filtered training dataset
         val_full_ds = self.vqa['test'].filter(filter_lamda)  # Create a filtered validation dataset, to be split later
-        print(f"NO DUPES: {len(train_ds)}")
+        logger.info(f"NO DUPES: {len(train_ds)}")
         # Split the full validation dataset into 50% validation and 50% test
         split = val_full_ds.train_test_split(test_size=0.5, seed=42)
         val_ds    = split["train"]
@@ -201,9 +204,9 @@ if __name__ == "__main__":
     dc = Data_Creater()
     train, val, test = dc.create_datasets(False)
     for batch_idx, (images, bert_encoding) in enumerate(train):
-        print(f"Batch Index: {batch_idx}")
-        print(f"Type of the image is {type(images[0])}")
-        print(f"Image is of shape: {images.shape}")
-        print(f"Type of the Embedding is {type(bert_encoding[0])}")
-        print(f"Encoding is of shape: {bert_encoding.shape}")
+        logger.info(f"Batch Index: {batch_idx}")
+        logger.info(f"Type of the image is {type(images[0])}")
+        logger.info(f"Image is of shape: {images.shape}")
+        logger.info(f"Type of the Embedding is {type(bert_encoding[0])}")
+        logger.info(f"Encoding is of shape: {bert_encoding.shape}")
         break

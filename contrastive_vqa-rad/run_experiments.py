@@ -3,16 +3,36 @@ from model import ConstrastiveModel, Trainer
 from vqa_data import Data_Creater
 import argparse
 import os
+import logging
+from datetime import datetime
 NOISE_MODES = ["none", "text", "image", "both"]
 EPOCHS      = 5
 BATCH_SIZE  = 64
 
+
 def main(noise_mode, dupes):
-    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
-    print(f"Using {device} device")
-    print(dupes)
+    # set up logging
+    log_filename = f"logs/{datetime.now()}.log"
+    os.makedirs("logs", exist_ok=True)
+    with open(log_filename, "a") as f:
+        f.write(f"NEW RUN - Noise Mode:{noise_mode}, Dupes:{dupes}")
+    logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    handlers=[
+        logging.FileHandler(log_filename, mode='a'),
+        logging.StreamHandler()
+        ]
+    )
+    logger = logging.getLogger(__name__)
+    logger.info("Experiment started.")
+
+
+    device = 'cuda' if torch.cuda.is_available() else "cpu"
+    logger.info(f"Using {device} device")
+    logger.info(dupes)
     for mode in NOISE_MODES:
-        print(f"\n\n=== Training with noise_mode = '{mode}' ===")
+        logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
         # 1) Prepare data loaders for this regime
         creator = Data_Creater(noise_mode=mode)
         #specify dupes
@@ -40,12 +60,14 @@ def build_parser() -> argparse.ArgumentParser:
         description="Pick noise to add to dataset")
 
     parser.add_argument(
-        "--noise", type=str, choices=NOISE_MODES, required=True,
-        help=f"pick which input add noise to {NOISE_MODES}")
+        "--noise", type=str, choices=NOISE_MODES,
+        help=f"pick which input add noise to {NOISE_MODES}",
+        default="none")
     
     parser.add_argument(
-        "--dupes", type=str, choices=["True", "False"], required=True,
-        help=f"Do you want to have duplicates? True or False?")
+        "--dupes", type=str, choices=["True", "False"],
+        help=f"Do you want to have duplicates? True or False?",
+        default="True")
     
     return parser
 
