@@ -147,7 +147,7 @@ class Trainer():
         torch.save(self.model.state_dict(), path)
     
     def load_model(self, path="models/clip_model.pth"):
-        model.load_state_dict(torch.load(path))
+        self.model.load_state_dict(torch.load(path, weights_only=True))
 
     def test(self):
         correct = 0
