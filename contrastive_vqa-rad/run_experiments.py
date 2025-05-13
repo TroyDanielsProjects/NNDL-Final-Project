@@ -52,7 +52,7 @@ def main(noise_mode, dupes, epochs):
             "Model Name": f"no-training_dupes{dupes}",
             "Accuracy": accuracy
         }])
-        model_df.to_csv('models_overnight.csv', mode='a', header=False, index=False)
+        model_df.to_csv('models_o.csv', mode='a', header=False, index=False)
         # 3) Train & save
         trainer.train(epochs=epochs)
         if dupes:
@@ -67,13 +67,13 @@ def main(noise_mode, dupes, epochs):
             "Model Name": model_name,
             "Accuracy": accuracy
         }])
-        model_df.to_csv('models_overnight.csv', mode='a', header=False, index=False)
+        model_df.to_csv('models_o.csv', mode='a', header=False, index=False)
     
     model_df = pd.DataFrame([{
             "Model Name": "new-setting",
             "Accuracy": "new-setting"
         }])
-    model_df.to_csv('models_overnight.csv', mode='a', header=False, index=False)
+    model_df.to_csv('models_o.csv', mode='a', header=False, index=False)
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -92,7 +92,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--epochs", type=int,
         help=f"How many epochs do you want to run per experiment",
-        default=15)
+        default=30)
     
     return parser
 

@@ -1,0 +1,10 @@
+NEW RUN - Noise Mode:none, Dupes:False2025-05-13 06:06:05,271 | INFO | __main__ | Experiment started.
+2025-05-13 06:06:06,561 | INFO | __main__ | Using cuda device
+2025-05-13 06:06:06,561 | INFO | __main__ | False
+2025-05-13 06:06:06,561 | INFO | __main__ | 
+
+=== Training with noise_mode = 'none' ===
+2025-05-13 06:06:10,534 | INFO | vqa_data | DUPES IS : False
+2025-05-13 06:06:24,411 | INFO | vqa_data | NO DUPES: 181
+2025-05-13 06:06:34,707 | INFO | model | The accuracy of the model is 0.5740740740740741
+2025-05-13 06:06:34,713 | INFO | model | Starting training run: 1

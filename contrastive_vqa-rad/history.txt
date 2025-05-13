@@ -1,0 +1,61 @@
+    1  git clone --branch Chris-Test https://github.com/TroyDanielsProjects/NNDL-Final-Project.git
+    2  cd NNDL-Final-Project/contrastive_vqa-rad/
+    3  l
+    4  ls
+    5  python --version
+    6  pip list
+    7  pip install transformers logging
+    8  pip install pandas
+    9  pip install torchvision
+   10  pip install nltk
+   11  bash run_jobs.sh 
+   12  pip install datasets
+   13  ls
+   14  vim run_experiments.py 
+   15  bash run_jobs.sh 
+   16  export PJRT_DEVICE=GPU
+   17  bash run_jobs.sh 
+   18  nvidia smi
+   19  nvidia-smi
+   20  ls
+   21  vim modsudo docker pull us-central1-docker.pkg.dev/tpu-pytorch-releases/docker/development:3.8_cuda_12.1
+   22  # Installing the NVIDIA Container Toolkit per https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+   23  # For example
+   24  curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+   25  sudo apt-get update
+   26  sudo apt-get install -y nvidia-container-toolkit
+   27  # Configuring the NVIDIA Container Toolkit
+   28  sudo nvidia-ctk runtime configure --runtime=docker
+   29  sudo systemctl restart docker
+   30  sudo docker run --shm-size=16g --net=host --gpus all -it -d us-central1-docker.pkg.dev/tpu-pytorch-releases/docker/development:3.8_cuda_12.1
+   31  sudo docker exec -it $(sudo docker ps | awk 'NR==2 { print $1 }') /bin/bash
+   32  sudo docker pull us-central1-docker.pkg.dev/tpu-pytorch-releases/docker/development:3.8_cuda_12.1
+   33  # Installing the NVIDIA Container Toolkit per https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+   34  # For example
+   35  curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+   36  sudo apt-get update
+   37  sudo apt-get install -y nvidia-container-toolkit
+   38  # Configuring the NVIDIA Container Toolkit
+   39  sudo nvidia-ctk runtime configure --runtime=docker
+   40  sudo systemctl restart docker
+   41  sudo docker run --shm-size=16g --net=host --gpus all -it -d us-central1-docker.pkg.dev/tpu-pytorch-releases/docker/development:3.8_cuda_12.1
+   42  sudo docker exec -it $(sudo docker ps | awk 'NR==2 { print $1 }') /bin/bash
+   43  bash run_jobs.sh 
+   44  pip uninstall torch_xla
+   45  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+   46  bash run_jobs.sh 
+   47  ls
+   48  cat model_overnight.csv
+   49  cat models_overnight.csv
+   50  mkdir models
+   51  vim run_experiments.py 
+   52  bash run_jobs.sh 
+   53  ll
+   54  ls
+   55  cd NNDL-Final-Project/
+   56  ls
+   57  cd contrastive_vqa-rad/
+   58  ls
+   59  cat models_o.csv
+   60  bash history > history.txt
+   61  history > history.txt
