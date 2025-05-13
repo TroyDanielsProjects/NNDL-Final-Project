@@ -45,11 +45,11 @@ def main(noise_mode, dupes, epochs, test_mode, repeats):
             #debug:print(sample)
 
             if not test_mode:
-                trainer.test()
                 logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
                 # 2) Build model & trainer
                 model   = ConstrastiveModel().to(device)
                 trainer = Trainer(model, train_dl, val_dl, device)
+                trainer.test()
 
                 # 3) Train & save
                 trainer.train(epochs=epochs)
