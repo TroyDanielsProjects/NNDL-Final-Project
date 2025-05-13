@@ -28,8 +28,7 @@ def main(noise_mode, dupes, epochs):
     logger.info("Experiment started.")
 
 
-    device = 'cuda' if torch.cuda.is_available() else "cpu"
-    device= 'mps'
+    device = 'cuda' if torch.cuda.is_available() else 'mps'
     logger.info(f"Using {device} device")
     logger.info(dupes)
     for mode in NOISE_MODES:
@@ -53,7 +52,7 @@ def main(noise_mode, dupes, epochs):
             "Model Name": f"no-training_dupes{dupes}",
             "Accuracy": accuracy
         }])
-        model_df.to_csv('models.csv', mode='a', header=False, index=False)
+        model_df.to_csv('models_overnight.csv', mode='a', header=False, index=False)
         # 3) Train & save
         trainer.train(epochs=epochs)
         if dupes:
@@ -68,14 +67,14 @@ def main(noise_mode, dupes, epochs):
             "Model Name": model_name,
             "Accuracy": accuracy
         }])
-        model_df.to_csv('models.csv', mode='a', header=False, index=False)
+        model_df.to_csv('models_overnight.csv', mode='a', header=False, index=False)
     
     model_df = pd.DataFrame([{
             "Model Name": "new-setting",
             "Accuracy": "new-setting"
         }])
-    model_df.to_csv('models.csv', mode='a', header=False, index=False)
-    
+    model_df.to_csv('models_overnight.csv', mode='a', header=False, index=False)
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Pick noise to add to dataset")
