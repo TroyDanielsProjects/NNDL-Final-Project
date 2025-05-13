@@ -179,8 +179,6 @@ class Trainer():
         logger.info(f"The accuracy of the model is {correct/total}")
 
 
-
-
 if __name__ == "__main__":
     train, test = Data_Creater().create_datasets()
     if torch.cuda.is_available():

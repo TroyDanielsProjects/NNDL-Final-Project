@@ -9,7 +9,7 @@ NOISE_MODES = ["none", "text", "image", "both"]
 BATCH_SIZE  = 64
 
 
-def main(noise_mode, dupes, epochs):
+def main(noise_mode, dupes, epochs, test_mode):
     # set up logging
     log_filename = f"logs/{datetime.now()}.log"
     os.makedirs("logs", exist_ok=True)
@@ -32,7 +32,7 @@ def main(noise_mode, dupes, epochs):
     logger.info(f"Using {device} device")
     logger.info(dupes)
     for mode in NOISE_MODES:
-        logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
+        # logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
         # 1) Prepare data loaders for this regime
         creator = Data_Creater(noise_mode=mode)
         #specify dupes
@@ -42,18 +42,31 @@ def main(noise_mode, dupes, epochs):
         #debug: sample=next(iter(train_dl))
         #debug:print(sample)
 
-        # 2) Build model & trainer
-        model   = ConstrastiveModel().to(device)
-        trainer = Trainer(model, train_dl, val_dl, device)
+        if not test_mode:
+            logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
+            # 2) Build model & trainer
+            model   = ConstrastiveModel().to(device)
+            trainer = Trainer(model, train_dl, val_dl, device)
 
-        # 3) Train & save
-        trainer.train(epochs=epochs)
-        if dupes:
-            model_name=f"models/clip_{mode}_Dupes.pth"
+            # 3) Train & save
+            trainer.train(epochs=epochs)
+            if dupes:
+                model_name=f"models/clip_{mode}_Dupes.pth"
+            else:
+                model_name=f"models/clip_{mode}_NoDupes.pth"
+            trainer.test()
+            trainer.save_model(path=model_name)
         else:
-            model_name=f"models/clip_{mode}_NoDupes.pth"
-        trainer.test()
-        trainer.save_model(path=model_name)
+            logger.info("\n\n=== Running with zero-training baseline parameters ===")
+            for run in range(10):
+                # 1) New model instance → new random init of projection layers
+                model = ConstrastiveModel().to(device)
+                trainer = Trainer(model, None, test_dl, device)  # pass None for train_dl
+
+                # 2) Evaluate without any train()
+                print(f"\nBaseline run {run+1}")
+                trainer.test()
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -74,8 +87,13 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"How many epochs do you want to run per experiment",
         default=15)
     
+    parser.add_argument(
+        "--test_mode", type=str,
+        choices=["True", "False"], default="False",
+        help="if True, run zero‐train baselines instead of training")
+    
     return parser
 
 if __name__ == "__main__":
     args= build_parser().parse_args()
-    main(args.noise, eval(args.dupes), args.epochs)
+    main(args.noise, eval(args.dupes), args.epochs, eval(args.test_mode))

@@ -4,10 +4,16 @@ import torch
 from torchvision import transforms as T
 from transformers import AutoTokenizer, AutoModel
 import random
+import nltk
 from nltk.corpus import wordnet
 from torchvision.transforms.functional import to_pil_image
 import hashlib
 import logging
+
+# ensure required corpora are installed
+nltk.download('wordnet', quiet=True)
+nltk.download('omw-1.4', quiet=True)
+
 # --- TEXT AUGMENTATION HELPERS ---
 
 logger = logging.getLogger(__name__)
