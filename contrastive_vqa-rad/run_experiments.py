@@ -6,16 +6,16 @@ import os
 import logging
 from datetime import datetime
 NOISE_MODES = ["none", "text", "image", "both"]
-BATCH_SIZE  = 64
 
 
-def main(noise_mode, dupes, epochs):
+
+def main(dupes, epochs, batch_size):
     # set up logging
     log_filename = f"logs/{datetime.now()}.log"
     os.makedirs("logs", exist_ok=True)
     os.makedirs("models", exist_ok=True)
     with open(log_filename, "a") as f:
-        f.write(f"NEW RUN - Noise Mode:{noise_mode}, Dupes:{dupes}")
+        f.write(f"NEW RUN - Dupes:{dupes}, Batch Size: {batch_size}")
     logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
@@ -34,7 +34,7 @@ def main(noise_mode, dupes, epochs):
     for mode in NOISE_MODES:
         logger.info(f"\n\n=== Training with noise_mode = '{mode}' ===")
         # 1) Prepare data loaders for this regime
-        creator = Data_Creater(noise_mode=mode)
+        creator = Data_Creater(noise_mode=mode, batch_size=batch_size)
         #specify dupes
         train_dl, val_dl, test_dl = creator.create_datasets(dupes)
         
@@ -58,11 +58,6 @@ def main(noise_mode, dupes, epochs):
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Pick noise to add to dataset")
-
-    parser.add_argument(
-        "--noise", type=str, choices=NOISE_MODES,
-        help=f"pick which input add noise to {NOISE_MODES}",
-        default="none")
     
     parser.add_argument(
         "--dupes", type=str, choices=["True", "False"],
@@ -74,8 +69,13 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"How many epochs do you want to run per experiment",
         default=15)
     
+    parser.add_argument(
+        "--batch_size", type=int,
+        help=f"Set the batch size for each experiment",
+        default=64)
+    
     return parser
 
 if __name__ == "__main__":
     args= build_parser().parse_args()
-    main(args.noise, eval(args.dupes), args.epochs)
+    main(eval(args.dupes), args.epochs, args.batch_size)
